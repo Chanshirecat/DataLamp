@@ -1,22 +1,38 @@
 import pandas as pd
 
-# Specify the path to the Excel file
+# path to the Excel file
 excel_file_path = r"D:\Users\Happi\Documents\BCC\Bachelor Thesis\BLM Herd Area and Herd Management Area Statistics.xlsx"
 
-# Load the data from the Excel file
-population_df = pd.read_excel(excel_file_path)
+# loads the Excel file and skips the metadata rows
+df_population = pd.read_excel(excel_file_path, skiprows=2)
 
-# Print the number of columns in the dataframe to diagnose the issue
-print(f"Number of columns: {len(population_df.columns)}")
+# renames the relevant columns
+df_population = df_population.rename(columns={
+    "Unnamed: 0": "State",
+    "Estimated Populations": "Horses",
+    "Unnamed: 9": "Burros",
+    "Unnamed: 10": "Total Population"
+})
 
-# Check the column names
-print(f"Columns: {population_df.columns.tolist()}")
+# selects only relevant columns
+df_population = df_population[["State", "Horses", "Burros", "Total Population"]]
 
-# Modify the column names to match the dataframe structure (adjusted to 13 columns)
-# Example: You can modify the column names to reflect your dataset. Here's an example assuming your dataset has 13 columns.
-population_df.columns = ['State', 'BLM Acres', 'Total Acres', 'BLM Acres from BLM',
-                         'Total Acres from BLM', 'Horses', 'Burros', 'Total Population',
-                         'High AML', 'Extra Column 1', 'Extra Column 2', 'Extra Column 3', 'Extra Column 4']
+# removes irrelevant rows
+df_population = df_population.dropna(subset=["State"])
+df_population = df_population[~df_population["State"].str.contains("TOTAL|March", na=False)]
 
-# Output the first few rows of the dataframe to verify the changes
-print(population_df.head())
+# converts the population columns to numeric values by removing commas
+df_population["Horses"] = df_population["Horses"].astype(str).str.replace(",", "").astype(float).astype(int)
+df_population["Burros"] = df_population["Burros"].astype(str).str.replace(",", "").astype(float).astype(int)
+df_population["Total Population"] = df_population["Total Population"].astype(str).str.replace(",", "").astype(float).astype(int)
+
+# saves the cleaned data to new CSV and Excel file
+cleaned_csv_path = r"D:\Users\Happi\Documents\BCC\Bachelor Thesis\Final_Cleaned_Population_Data.csv"
+cleaned_excel_path = r"D:\Users\Happi\Documents\BCC\Bachelor Thesis\Final_Cleaned_Population_Data.xlsx"
+
+df_population.to_csv(cleaned_csv_path, index=False)
+df_population.to_excel(cleaned_excel_path, index=False)
+
+# prints the cleaned data
+print("Cleaned population data successfully saved!")
+print(df_population.head())
