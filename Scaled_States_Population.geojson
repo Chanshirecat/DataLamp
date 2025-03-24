@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Scaled_States_Population",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+
+]
+}
