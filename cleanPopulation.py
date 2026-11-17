@@ -1,38 +1,51 @@
+from pathlib import Path
+import pypdf
 import pandas as pd
 
-# path to the Excel file
-excel_file_path = r"D:\Users\Happi\Documents\BCC\Bachelor Thesis\BLM Herd Area and Herd Management Area Statistics.xlsx"
+#directory location
+script_dir = Path(__file__).resolve().parent
 
-# loads the Excel file and skips the metadata rows
-df_population = pd.read_excel(excel_file_path, skiprows=2)
+#Input and Output paths
+pdf_path = script_dir / "Data" / "BLM Herd Area and Herd Management Area Statistics.pdf"
+output_excel_path = script_dir / "Data" / "Final_Cleaned_Population_Data.xlsx"
+output_csv_path = script_dir / "Data" / "Final_Cleaned_Population_Data.csv"
 
-# renames the relevant columns
-df_population = df_population.rename(columns={
-    "Unnamed: 0": "State",
-    "Estimated Populations": "Horses",
-    "Unnamed: 9": "Burros",
-    "Unnamed: 10": "Total Population"
-})
+print(f"Reading PDF summary from: {pdf_path}")
 
-# selects only relevant columns
-df_population = df_population[["State", "Horses", "Burros", "Total Population"]]
+#Open PDF and read Page 1
+reader = pypdf.PdfReader(pdf_path)
+page1_text = reader.pages[0].extract_text()
 
-# removes irrelevant rows
-df_population = df_population.dropna(subset=["State"])
-df_population = df_population[~df_population["State"].str.contains("TOTAL|March", na=False)]
+#Parse state rows
+states_data = []
+target_states = ["AZ", "CA", "CO", "ID", "MT", "NV", "NM", "OR", "UT", "WY"]
 
-# converts the population columns to numeric values by removing commas
-df_population["Horses"] = df_population["Horses"].astype(str).str.replace(",", "").astype(float).astype(int)
-df_population["Burros"] = df_population["Burros"].astype(str).str.replace(",", "").astype(float).astype(int)
-df_population["Total Population"] = df_population["Total Population"].astype(str).str.replace(",", "").astype(float).astype(int)
+for line in page1_text.split("\n"):
+    parts = line.strip().split()
+    if parts and parts[0] in target_states:
+        state = parts[0]
+        try:
+            horses = int(parts[6].replace(",", ""))
+            burros = int(parts[7].replace(",", ""))
+            total_pop = int(parts[8].replace(",", ""))
 
-# saves the cleaned data to new CSV and Excel file
-cleaned_csv_path = r"D:\Users\Happi\Documents\BCC\Bachelor Thesis\Final_Cleaned_Population_Data.csv"
-cleaned_excel_path = r"D:\Users\Happi\Documents\BCC\Bachelor Thesis\Final_Cleaned_Population_Data.xlsx"
+            if total_pop > 0:
+                states_data.append({
+                    "State": state,
+                    "Horses": horses,
+                    "Burros": burros,
+                    "Total Population": total_pop
+                })
+        except (ValueError, IndexError):
+            continue
 
-df_population.to_csv(cleaned_csv_path, index=False)
-df_population.to_excel(cleaned_excel_path, index=False)
+df_population = pd.DataFrame(states_data)
 
-# prints the cleaned data
-print("Cleaned population data successfully saved!")
-print(df_population.head())
+print("\nSTATES WITH ACTIVE POPULATIONS")
+print(df_population.to_string(index=False))
+
+#Save cleaned data to the Data folder
+df_population.to_excel(output_excel_path, index=False)
+df_population.to_csv(output_csv_path, index=False)
+
+print("\nCleaned population data successfully saved to Final_Cleaned_Population_Data.xlsx!")

@@ -17,25 +17,6 @@ df_herd_areas["State"] = df_herd_areas["State"].str.upper()
 df_merged = df_herd_areas.merge(df_population, on="State", how="left")
 
 # ✅ Step 5: Fix numeric data types
-import pandas as pd
-import geopandas as gpd
-
-# ✅ Step 1: Load the cleaned population data
-population_data_path = r"D:\Users\Happi\Documents\BCC\Bachelor Thesis\Final_Cleaned_Population_Data.csv"
-df_population = pd.read_csv(population_data_path)
-
-# ✅ Step 2: Load the herd area dataset
-herd_area_data_path = r"D:\Users\Happi\Documents\BCC\Bachelor Thesis\DataLamp\filtered_herds.geojson"
-df_herd_areas = gpd.read_file(herd_area_data_path)
-
-# ✅ Step 3: Convert state names to uppercase for consistency
-df_population["State"] = df_population["State"].str.upper()
-df_herd_areas["State"] = df_herd_areas["State"].str.upper()
-
-# ✅ Step 4: Merge datasets
-df_merged = df_herd_areas.merge(df_population, on="State", how="left")
-
-# ✅ Step 5: Fix numeric data types
 df_merged["Horses"] = pd.to_numeric(df_merged["Horses"], errors="coerce").fillna(0)
 df_merged["Burros"] = pd.to_numeric(df_merged["Burros"], errors="coerce").fillna(0)
 

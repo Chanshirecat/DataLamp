@@ -1,0 +1,20 @@
+﻿,Herd Area,,,,Herd Management Area,,,Estimated Populations,,,,
+States,BLM Acres,Total Acres,"Acres
+Transferred from BLM",,BLM Acres,Total Acres,,Horses,Burros,Total,,High AML
+AZ,"2,019,027","3,643,197",0,,"1,498,207","2,296,269",,229,"5,898","6,127",,"1,676"
+CA,"5,170,931","7,021,651","1,425,649",,"2,053,082","2,533,722",,"3,487","3,696","7,183",,"2,200"
+CO,"723,095","851,275",0,,"365,988","404,013",,"1,322",0,"1,322",,827
+ID,"420,783","477,300",0,,"383,894","418,268",,489,0,489,,617
+MT,"103,844","230,073",0,,"27,094","35,640",,198,0,198,,120
+NV,"19,778,204","23,028,911","437,436",,"14,032,947","15,668,201",,"33,338","4,685","38,023",,"12,811"
+NM,"88,655","126,530",0,,"24,506","28,613",,455,0,455,,83
+OR,"3,608,660","4,312,356","130,335",,"2,733,577","2,978,751",,"5,092",62,"5,154",,"2,700"
+UT,"3,224,891","3,915,687","98,289",,"2,154,458","2,451,227",,"4,078",227,"4,305",,"1,956"
+WY,"7,301,975","10,344,424",0,,"3,644,013","4,779,373",,"10,264",0,"10,264",,"3,795"
+TOTAL,"42,440,065","53,951,404","2,091,709",,"26,917,766","31,594,077",,"58,952","14,568","73,520",,"26,785"
+"Herd Management Areas (HMA) and Herd Areas (HA) have been placed in separate tables by state.
+The population estimation method used on the majority of HMAs is the simultaneous double count method.
+Most of the 177 HMAs have been counted with this method.  Ground counts are still done on smaller areas where animals are easier to identify. Populations do not reflect any changes after March 1, 2024 (i.e. foal crops or gathers).
+BLM policy is to establish Appropiate Management Levels (AML) as a range with upper and lower levels.
+Acres have been calculated using current digitized (GIS) maps using the UTM (Universial Transverse Mercator) projections. Acreage transferred from BLM to another agency are not deducted from the HA acreage.
+HA acreage totals are calculated based on designations made in the early 1970's.",,,,,,,,,,,,

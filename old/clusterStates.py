@@ -21,24 +21,23 @@ os.makedirs(output_folder, exist_ok=True)
 # Load population data
 df_population = pd.read_csv(population_data_path)
 
-# Function to generate cluster points inside state shape
+#Function to generate cluster points inside state shape
 def generate_cluster_points(state_geometry, state_population, crs):
-    """Generates spaced cluster points inside state boundary, scaled by population size."""
+
     if pd.isna(state_population) or state_population <= 0:
         return None
 
     # Adjust clustering density dynamically with upper and lower limits
-    num_points = min(500, max(50, int(state_population / 5)))  # Limits the density
+    num_points = min(500, max(50, int(state_population / 5)))  #Limits the density
 
     points = []
     minx, miny, maxx, maxy = state_geometry.bounds
 
     while len(points) < num_points:
         random_point = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
-        if state_geometry.contains(random_point):  # Ensure point is inside state shape
+        if state_geometry.contains(random_point):
             points.append(random_point)
 
-    # Create GeoDataFrame
     return gpd.GeoDataFrame(geometry=points, crs=crs)
 
 # Process each state file
@@ -73,14 +72,14 @@ for state_file in os.listdir(states_folder):
 
         print(f"🟢 Generated {len(cluster_gdf)} cluster points for {state_name}")
 
-        # Convert points to numeric arrays
+        #Convert points to numeric arrays
         point_coords = cluster_gdf.geometry.apply(lambda geom: [geom.x, geom.y]).tolist()
 
-        # Apply DBSCAN first (prevents forced clustering)
+        #Apply DBSCAN first (prevents forced clustering)
         dbscan = hdbscan.HDBSCAN(min_cluster_size=5, min_samples=3)
         cluster_labels = dbscan.fit_predict(point_coords)
 
-        # If DBSCAN fails (i.e., assigns everything to -1), use KMeans as fallback
+        #If DBSCAN fails, use KMeans as fallback
         if len(set(cluster_labels)) == 1:  # Only noise detected
             print(f"⚠️ DBSCAN failed for {state_name}, using KMeans fallback...")
             kmeans = KMeans(n_clusters=min(20, len(cluster_gdf)), random_state=42, n_init=10)
@@ -90,7 +89,6 @@ for state_file in os.listdir(states_folder):
 
         # Avoid Overlapping Clusters: Apply force-directed jitter
         def add_jitter(coord, scale=0.02):
-            """Applies slight movement to avoid overlaps."""
             return coord + np.random.uniform(-scale, scale)
 
         cluster_gdf["geometry"] = cluster_gdf.geometry.apply(lambda p: Point(add_jitter(p.x), add_jitter(p.y)))
